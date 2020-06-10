@@ -17,6 +17,8 @@ from app        import app, lm, db, bc
 from app.models import User
 from app.forms  import LoginForm, RegisterForm
 
+app.config['UPLOAD_FOLDER'] = "C:/Users/advai/Output_Files/"
+
 # provide login manager with load_user callback
 @lm.user_loader
 def load_user(user_id):
@@ -128,6 +130,19 @@ def index(path):
         
         return render_template('layouts/auth-default.html',
                                 content=render_template( 'pages/404.html' ) )
+
+@app.route("/index", methods = ["GET", "POST"])
+def upload_file():
+    if request.method == "POST":
+        if request.files:
+            file = request.files['customFile']
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], file.filename))
+            print(file)
+            if file.filename == "":
+                print("No selected File")
+            return redirect(request.url)
+    return render_template('layouts/default.html',
+                                content=render_template( 'pages/index.html') )
 
 # Return sitemap 
 @app.route('/sitemap.xml')
